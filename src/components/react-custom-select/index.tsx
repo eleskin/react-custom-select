@@ -74,12 +74,14 @@ export const ReactCustomSelect = ({children, value, callback, ...props}: IReactC
 	
 	useOutsideAlerter(selectRef, () => setIsActive(false));
 	
+	const focusableElements = document.querySelectorAll('*[tabindex], input, select, textarea');
+	
 	const handleKeyDownSelect = (event: any) => {
 		event.preventDefault();
 		
 		if (event.key === 'Enter') {
 			setIsActive(!isActive);
-			selectOptionsRef.current.focus();
+			selectOptionsRef.current?.focus();
 		} else if (event.key === 'ArrowUp') {
 			if (activeValue > 0) {
 				callback(childrenValueList[activeValue - 1]);
@@ -103,13 +105,13 @@ export const ReactCustomSelect = ({children, value, callback, ...props}: IReactC
 		} else if (event.key === 'Escape') {
 			setIsActive(false);
 		} else if (event.key === 'Tab') {
+			const index = Array.from(focusableElements).indexOf(selectRef.current);
+			const nextIndex = index + 1;
 			if (!isTabPressed) {
 				setIsActive(false);
 				setIsTabPressed(true);
 			} else {
-				if (document.activeElement === selectRef.current) {
-					selectRef.current.blur();
-				}
+				(focusableElements[nextIndex] as any)?.focus()
 			}
 		}
 	};
@@ -119,7 +121,7 @@ export const ReactCustomSelect = ({children, value, callback, ...props}: IReactC
 			{...props}
 			className={`${styles.customSelect} ${isActive ? styles.customSelect_active : ''}`}
 			onClick={(event: any) => {
-				event.target.focus();
+				event.target?.focus();
 				setIsActive(!isActive);
 			}}
 			onKeyDown={handleKeyDownSelect}
